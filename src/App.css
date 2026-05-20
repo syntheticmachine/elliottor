@@ -1312,6 +1312,18 @@ button.disk-wrap.as-button:disabled {
   gap: 12px;
 }
 
+/* ------- Build version (very small, for deploy-cache checks) ------- */
+.version {
+  margin-top: 20px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
+  opacity: 0.55;
+  user-select: all; /* easy to copy when sharing a bug report */
+}
+
 /* ------- Hidden YT iframe host -------
    iOS Safari refuses audio playback on iframes that are 0×0 or moved
    off-screen via large negative offsets. Keep the iframe in the

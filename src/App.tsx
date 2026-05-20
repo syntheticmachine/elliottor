@@ -307,6 +307,10 @@ function Game() {
 
       <div ref={ytHostRef} className="yt-host" />
 
+      <div className="version" aria-label="Build version">
+        v{__APP_VERSION__}
+      </div>
+
       {showIntro && (
         <IntroModal
           playCount={playCount}
