@@ -78,11 +78,15 @@ export function SongDropdown({ disabled, onSelect }: Props) {
           placeholder="Name That Tune"
           value={query}
           disabled={disabled}
-          autoComplete="off"
+          // "one-time-code" is iOS's strongest AutoFill suppression. It tells
+          // Safari this field is for a verification code, so the contact-
+          // suggestion bar doesn't appear above the keyboard.
+          autoComplete="one-time-code"
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}
           enterKeyHint="search"
+          inputMode="search"
           name="elliottor-guess"
           onChange={(e) => {
             setQuery(e.target.value);
