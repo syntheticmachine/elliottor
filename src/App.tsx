@@ -34,9 +34,13 @@ function Game() {
   const [stats, setStats] = useState<Stats>(() => loadStats());
   const recordedKey = useRef<string | null>(null);
 
-  // Brief celebration animations on key state changes
+  // Brief celebration animations on key state changes.
+  // shakeKey is non-null only while the wrong-guess shake is actively
+  // playing; clearing it after the animation ends prevents the shake
+  // class from being re-applied (and the animation re-firing) when the
+  // play-screen remounts on the next song.
   const [scoreBump, setScoreBump] = useState(0);
-  const [shakeNonce, setShakeNonce] = useState(0);
+  const [shakeKey, setShakeKey] = useState<number | null>(null);
   const [tierBumpNonce, setTierBumpNonce] = useState(0);
   const prevScore = useRef(session.score);
   const prevWrongCount = useRef(0);
@@ -102,11 +106,20 @@ function Game() {
     prevScore.current = session.score;
   }, [session.score]);
 
-  // Shake the play screen + flash the input on each wrong guess.
+  // Shake the play screen on each wrong guess. Clear after the animation
+  // finishes so a later remount (e.g. advancing to the next song) doesn't
+  // re-fire the shake.
   useEffect(() => {
     const wrong = session.currentGuesses.filter((g) => g.outcome === 'wrong').length;
     if (wrong > prevWrongCount.current) {
-      setShakeNonce((n) => n + 1);
+      const key = Date.now();
+      setShakeKey(key);
+      const t = window.setTimeout(() => {
+        // Only clear if no newer shake has overwritten this one
+        setShakeKey((current) => (current === key ? null : current));
+      }, 500);
+      prevWrongCount.current = wrong;
+      return () => window.clearTimeout(t);
     }
     prevWrongCount.current = wrong;
   }, [session.currentGuesses]);
@@ -123,6 +136,7 @@ function Game() {
   useEffect(() => {
     prevWrongCount.current = 0;
     prevTier.current = 0;
+    setShakeKey(null);
   }, [session.currentIndex]);
 
   useEffect(() => {
@@ -179,7 +193,7 @@ function Game() {
 
       <main className="main">
         {session.status === 'playing' && session.currentSong && (
-          <div key={`shake-${shakeNonce}`} className={`play-screen${shakeNonce ? ' shake' : ''}`}>
+          <div key={`shake-${shakeKey ?? 'idle'}`} className={`play-screen${shakeKey ? ' shake' : ''}`}>
             <button
               type="button"
               className={`disk-wrap as-button ${player.isPlaying ? 'playing' : ''}`}

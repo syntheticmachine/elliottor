@@ -53,6 +53,19 @@ export function SessionEnd({ results, stats, onRestart }: Props) {
   const animatedTotal = useCountUp(total, 900);
 
   async function handleShare() {
+    // Prefer the native share sheet (mobile) — same UX as Wordle: opens
+    // Messages, Mail, etc. Falls back to clipboard on desktop where
+    // navigator.share isn't available.
+    if (typeof navigator !== 'undefined' && 'share' in navigator) {
+      try {
+        await navigator.share({ text: share });
+        return;
+      } catch (e) {
+        // User dismissed the share sheet — silently exit; only fall back
+        // to clipboard on a real failure.
+        if ((e as Error).name === 'AbortError') return;
+      }
+    }
     const ok = await copyToClipboard(share);
     if (ok) {
       setCopied(true);
