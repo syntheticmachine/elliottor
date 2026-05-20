@@ -10,11 +10,14 @@ import { SongResultCard } from './components/SongResultCard';
 import { SessionEnd } from './components/SessionEnd';
 import { VinylDemo } from './components/VinylDemo';
 import { IntroModal } from './components/IntroModal';
+import { ModeSelectModal } from './components/ModeSelectModal';
 import {
+  hasPickedMode,
   hasSeenIntro,
   loadMode,
   loadStats,
   markIntroSeen,
+  markModePicked,
   recordSession,
   saveMode,
   type Stats,
@@ -52,6 +55,12 @@ function Game() {
   // Show the how-to-play modal on first visit; also when the user clicks
   // the (?) icon in the header.
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro());
+  // Returning users who saw the intro before Hard mode shipped need a
+  // one-time prompt to pick a mode. First-time users get the picker inside
+  // the IntroModal, so we don't show this for them.
+  const [showModeSelect, setShowModeSelect] = useState(
+    () => hasSeenIntro() && !hasPickedMode(),
+  );
   // Global play counter (best-effort, gracefully degrades to null on failure).
   const [playCount, setPlayCount] = useState<number | null>(null);
 
@@ -333,7 +342,23 @@ function Game() {
           onModeChange={setMode}
           onClose={() => {
             markIntroSeen();
+            // Dismissing the intro is also an implicit mode choice — even
+            // if the user kept the default — so they don't get the
+            // ModeSelectModal on top of it.
+            markModePicked();
             setShowIntro(false);
+            setShowModeSelect(false);
+          }}
+        />
+      )}
+
+      {!showIntro && showModeSelect && (
+        <ModeSelectModal
+          mode={mode}
+          onModeChange={setMode}
+          onClose={() => {
+            markModePicked();
+            setShowModeSelect(false);
           }}
         />
       )}

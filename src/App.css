@@ -1337,6 +1337,14 @@ button.disk-wrap.as-button:disabled {
   margin-right: auto;
 }
 
+/* Blurb on the one-time mode-select modal */
+.mode-select-blurb {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
 /* ------- Mode picker (intro modal + session end) ------- */
 .mode-picker {
   display: grid;
