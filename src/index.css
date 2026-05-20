@@ -40,14 +40,41 @@
 body {
   margin: 0;
   min-height: 100svh;
-  /* Layered background — texture on body (not a fixed <img>) so it propagates
-     into the iOS safe-area insets (notch / home-indicator area). Top layer is
-     a translucent cream wash that controls how much texture comes through. */
+  /* Desktop: layered paper-texture background. Cream wash on top controls
+     visibility, paper image gives organic character, solid cream fallback. */
   background:
     linear-gradient(rgba(241, 231, 211, 0.45), rgba(241, 231, 211, 0.45)),
     url('/bg.jpg') center / cover no-repeat fixed,
     var(--bg);
   position: relative;
+}
+
+/* Mobile: replace the paper image with a more visible cream + red gradient.
+   Pure CSS scales perfectly at any size and looks intentional rather than
+   stretched/cropped like a cover image does on portrait screens. */
+@media (max-width: 640px) {
+  body {
+    background:
+      /* Warm red glow upper-right (poster accent) */
+      radial-gradient(
+        ellipse 85% 55% at 100% 0%,
+        rgba(216, 57, 44, 0.18) 0%,
+        transparent 60%
+      ),
+      /* Softer red glow lower-left for balance */
+      radial-gradient(
+        ellipse 65% 45% at 0% 100%,
+        rgba(216, 57, 44, 0.1) 0%,
+        transparent 55%
+      ),
+      /* Diagonal cream gradient — clearly visible, light to a touch deeper */
+      linear-gradient(
+        135deg,
+        #f4ead5 0%,
+        #ecdec0 60%,
+        #e6d4b3 100%
+      );
+  }
 }
 
 #root {

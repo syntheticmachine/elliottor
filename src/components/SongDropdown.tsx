@@ -75,7 +75,7 @@ export function SongDropdown({ disabled, onSelect }: Props) {
         <input
           className="dropdown-input"
           type="search"
-          placeholder="Name That Tune"
+          placeholder="What song is this?"
           value={query}
           disabled={disabled}
           // "one-time-code" is iOS's strongest AutoFill suppression. It tells
