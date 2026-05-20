@@ -1,0 +1,299 @@
+/* ─────────────────────────────────────────────────────────────
+   VinylDemo — dev-only comparison page
+   Self-contained CSS, namespaced with .vd- prefix.
+   ───────────────────────────────────────────────────────────── */
+
+.vd-page {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  font-family: var(--sans);
+  color: var(--ink);
+}
+
+.vd-header {
+  margin-bottom: 32px;
+}
+
+.vd-header h1 {
+  font-family: var(--display);
+  font-size: 44px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.vd-header p {
+  color: var(--ink-dim);
+  max-width: 540px;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.vd-back a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.vd-back a:hover {
+  text-decoration: underline;
+}
+
+.vd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.vd-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.vd-card-title {
+  font-family: var(--display);
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-align: center;
+}
+
+.vd-card-desc {
+  font-size: 12px;
+  color: var(--ink-dim);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.vd-stage {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* ───── Disc (shared across all variants) ───── */
+
+.vd-disk-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vd-disk {
+  --label-color: var(--accent);
+  position: relative;
+  width: 134px;
+  height: 134px;
+  border-radius: 50%;
+  animation: vd-spin 1.8s linear infinite;
+  transform-origin: center;
+  background:
+    radial-gradient(circle at center, var(--bg) 0, var(--bg) 2.5px, transparent 3px),
+    radial-gradient(circle at center, var(--label-color) 0, var(--label-color) 32px, transparent 32.5px),
+    radial-gradient(circle at center, transparent 22px, rgba(0, 0, 0, 0.18) 22.5px, transparent 23.5px),
+    radial-gradient(circle at center, transparent 31px, rgba(0, 0, 0, 0.6) 32px, transparent 33.5px),
+    radial-gradient(circle at 38% 36%, rgba(255, 255, 255, 0.07) 0, transparent 55%),
+    radial-gradient(circle at center, transparent 38px, rgba(195, 178, 145, 0.26) 38.5px, transparent 39.5px),
+    radial-gradient(circle at center, transparent 45px, rgba(195, 178, 145, 0.2) 45.5px, transparent 46.5px),
+    radial-gradient(circle at center, transparent 52px, rgba(195, 178, 145, 0.24) 52.5px, transparent 53.5px),
+    radial-gradient(circle at center, transparent 59px, rgba(195, 178, 145, 0.2) 59.5px, transparent 60.5px),
+    radial-gradient(circle at center, transparent 64px, rgba(195, 178, 145, 0.28) 64.5px, transparent 65.5px),
+    repeating-radial-gradient(circle at center, #1a1714 0, #1a1714 1.5px, #0b0908 1.5px, #0b0908 2.4px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.vd-disk-mark {
+  position: absolute;
+  width: 3px;
+  height: 16px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.35));
+  border-radius: 1.5px;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+.vd-disk-mark-sm {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  bottom: 30px;
+  right: 36px;
+  z-index: 4;
+}
+
+@keyframes vd-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ───── Smooth-motor variant (subtle easing on spin-up) ─────
+   For demo we just slow it slightly so the difference is felt. */
+.has-smooth .vd-disk {
+  animation: vd-spin 2.1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ───── Tonearm (SVG, positioned absolutely on the wrap) ───── */
+
+.vd-tonearm {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 130px;
+  height: 130px;
+  pointer-events: none;
+  z-index: 6;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+}
+
+/* ───── Progress ring ───── */
+
+.vd-ring {
+  position: absolute;
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  z-index: 2;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.vd-ring-fill {
+  stroke-dasharray: 100 100;
+  stroke-dashoffset: 100;
+  animation: vd-ring-fill 3s ease-in-out infinite;
+}
+
+@keyframes vd-ring-fill {
+  0% { stroke-dashoffset: 100; }
+  90% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+/* ───── EQ bars ───── */
+
+.vd-eq {
+  position: absolute;
+  right: -8px;
+  bottom: 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 50px;
+  z-index: 5;
+}
+
+.vd-eq-bar {
+  display: block;
+  width: 4px;
+  background: var(--accent);
+  border-radius: 1px;
+  transform-origin: bottom;
+  animation: vd-eq-bounce 0.85s ease-in-out infinite alternate;
+  height: 100%;
+}
+
+@keyframes vd-eq-bounce {
+  0% { transform: scaleY(0.18); }
+  100% { transform: scaleY(1); }
+}
+
+/* ───── Crackle particles ───── */
+
+.vd-crackle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(195, 178, 145, 0.65);
+  pointer-events: none;
+  z-index: 7;
+  animation: vd-crackle-float linear infinite;
+}
+
+@keyframes vd-crackle-float {
+  0% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(8px, -14px); }
+}
+
+/* ───── Light sweep ───── */
+
+.vd-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 8;
+  animation: vd-sweep-rotate 4s linear infinite;
+}
+
+@keyframes vd-sweep-rotate {
+  from { transform: rotate(0); }
+  to { transform: rotate(360deg); }
+}
+
+/* ───── Album label · Figure 8 (extra swirl detail) ───── */
+
+.has-album-label.label-figure8 .vd-disk {
+  background:
+    radial-gradient(circle at center, var(--bg) 0, var(--bg) 2.5px, transparent 3px),
+    /* red figure-8 swirl behind black */
+    radial-gradient(ellipse 18px 26px at center, transparent 0, transparent 12px, var(--accent) 12.5px, var(--accent) 14px, transparent 14.5px),
+    radial-gradient(circle at center, var(--label-color) 0, var(--label-color) 32px, transparent 32.5px),
+    radial-gradient(circle at center, transparent 31px, rgba(0, 0, 0, 0.6) 32px, transparent 33.5px),
+    radial-gradient(circle at 38% 36%, rgba(255, 255, 255, 0.07) 0, transparent 55%),
+    radial-gradient(circle at center, transparent 38px, rgba(195, 178, 145, 0.26) 38.5px, transparent 39.5px),
+    radial-gradient(circle at center, transparent 45px, rgba(195, 178, 145, 0.2) 45.5px, transparent 46.5px),
+    radial-gradient(circle at center, transparent 52px, rgba(195, 178, 145, 0.24) 52.5px, transparent 53.5px),
+    radial-gradient(circle at center, transparent 59px, rgba(195, 178, 145, 0.2) 59.5px, transparent 60.5px),
+    radial-gradient(circle at center, transparent 64px, rgba(195, 178, 145, 0.28) 64.5px, transparent 65.5px),
+    repeating-radial-gradient(circle at center, #1a1714 0, #1a1714 1.5px, #0b0908 1.5px, #0b0908 2.4px);
+}
+
+/* ───── Responsive ───── */
+
+@media (max-width: 640px) {
+  .vd-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .vd-stage {
+    width: 170px;
+    height: 170px;
+  }
+  .vd-disk-wrap {
+    width: 140px;
+    height: 140px;
+  }
+  .vd-disk {
+    width: 118px;
+    height: 118px;
+  }
+}

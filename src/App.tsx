@@ -8,6 +8,7 @@ import { TierPills } from './components/TierPills';
 import { SongDots } from './components/SongDots';
 import { SongResultCard } from './components/SongResultCard';
 import { SessionEnd } from './components/SessionEnd';
+import { VinylDemo } from './components/VinylDemo';
 import { loadStats, recordSession, type Stats } from './lib/storage';
 import {
   MAX_POINTS_PER_SESSION,
@@ -16,6 +17,17 @@ import {
 } from './types';
 
 function App() {
+  // Dev-only vinyl design comparison page — visit ?demo=vinyl to see it.
+  if (
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('demo') === 'vinyl'
+  ) {
+    return <VinylDemo />;
+  }
+  return <Game />;
+}
+
+function Game() {
   const session = useSession();
   const ytHostRef = useRef<HTMLDivElement>(null);
   const player = useYouTubePlayer(ytHostRef);
