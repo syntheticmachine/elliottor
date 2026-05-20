@@ -22,6 +22,14 @@ function App() {
   const [stats, setStats] = useState<Stats>(() => loadStats());
   const recordedKey = useRef<string | null>(null);
 
+  // Brief celebration animations on key state changes
+  const [scoreBump, setScoreBump] = useState(0);
+  const [shakeNonce, setShakeNonce] = useState(0);
+  const [tierBumpNonce, setTierBumpNonce] = useState(0);
+  const prevScore = useRef(session.score);
+  const prevWrongCount = useRef(0);
+  const prevTier = useRef(session.currentTier);
+
   useEffect(() => {
     if (player.status !== 'ready' || !session.currentSong) return;
     player.loadAndPause(
@@ -33,6 +41,37 @@ function App() {
   useEffect(() => {
     if (session.status !== 'playing') player.stop();
   }, [session.status, player]);
+
+  // Pulse the score counter whenever the score increases.
+  useEffect(() => {
+    if (session.score > prevScore.current) {
+      setScoreBump((n) => n + 1);
+    }
+    prevScore.current = session.score;
+  }, [session.score]);
+
+  // Shake the play screen + flash the input on each wrong guess.
+  useEffect(() => {
+    const wrong = session.currentGuesses.filter((g) => g.outcome === 'wrong').length;
+    if (wrong > prevWrongCount.current) {
+      setShakeNonce((n) => n + 1);
+    }
+    prevWrongCount.current = wrong;
+  }, [session.currentGuesses]);
+
+  // Flash the newly-active tier pill when advancing.
+  useEffect(() => {
+    if (session.currentTier !== prevTier.current && session.currentTier > 0) {
+      setTierBumpNonce((n) => n + 1);
+    }
+    prevTier.current = session.currentTier;
+  }, [session.currentTier]);
+
+  // Reset trackers when starting a new song / restart
+  useEffect(() => {
+    prevWrongCount.current = 0;
+    prevTier.current = 0;
+  }, [session.currentIndex]);
 
   useEffect(() => {
     if (session.status !== 'session-complete') return;
@@ -64,7 +103,8 @@ function App() {
         <img src={logoUrl} alt="Elliottor" className="logo" />
         <div className="score-display">
           <span className="score-label">score</span>
-          <span className="score-value">
+          {/* key={scoreBump} restarts the pulse animation on each score change */}
+          <span key={scoreBump} className="score-value pulse">
             {session.score}
             <span className="score-max">/{MAX_POINTS_PER_SESSION}</span>
           </span>
@@ -82,7 +122,7 @@ function App() {
 
       <main className="main">
         {session.status === 'playing' && session.currentSong && (
-          <div className="play-screen">
+          <div key={`shake-${shakeNonce}`} className={`play-screen${shakeNonce ? ' shake' : ''}`}>
             <div className={`disk-wrap ${player.isPlaying ? 'playing' : ''}`}>
               <span className="disk-pulse" />
               <span className="disk-pulse" />
@@ -103,7 +143,7 @@ function App() {
               <span className="play-icon">{player.isPlaying ? '■' : '▶'}</span>
             </button>
 
-            <TierPills currentTier={session.currentTier} />
+            <TierPills currentTier={session.currentTier} flashKey={tierBumpNonce} />
 
             <div className="play-meta">
               {player.isPlaying ? 'Playing' : `${TIERS[session.currentTier].label} clip · ${session.tierPoints}pt available`}

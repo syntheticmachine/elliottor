@@ -1,5 +1,6 @@
 import { type Song } from '../data/songs';
 import { type SongResult, TIERS } from '../types';
+import { Confetti } from './Confetti';
 
 type Props = {
   song: Song;
@@ -13,11 +14,21 @@ function tierLabelForPoints(points: number): string | null {
   return tier ? tier.label : null;
 }
 
+// Tier-scaled confetti: getting it on the 1.5s clip deserves a bigger
+// celebration than getting it on the 5s clip.
+function confettiCountForPoints(points: number): number {
+  if (points >= 3) return 55;
+  if (points >= 2) return 32;
+  return 20;
+}
+
 export function SongResultCard({ song, result, isLast, onNext }: Props) {
   const tierLabel = result.won ? tierLabelForPoints(result.points) : null;
 
   return (
     <div className="song-result enter-pop">
+      {result.won && <Confetti count={confettiCountForPoints(result.points)} />}
+
       <div className={result.won ? 'result-banner win' : 'result-banner lose'}>
         {result.won
           ? `+${result.points} pt${result.points === 1 ? '' : 's'}`

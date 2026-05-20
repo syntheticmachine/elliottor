@@ -3,6 +3,7 @@ import { MAX_POINTS_PER_SESSION, TIERS, type SongResult } from '../types';
 import { buildSessionShare, copyToClipboard } from '../lib/share';
 import { findSongById } from '../data/songs';
 import { averageScore, type Stats } from '../lib/storage';
+import { Confetti } from './Confetti';
 
 type Props = {
   results: SongResult[];
@@ -59,8 +60,14 @@ export function SessionEnd({ results, stats, onRestart }: Props) {
     }
   }
 
+  const isPerfect = total === MAX_POINTS_PER_SESSION;
+  const didWin = total >= MAX_POINTS_PER_SESSION / 2;
+
   return (
     <div className="session-end enter-pop">
+      {isPerfect && <Confetti count={120} durationMs={2800} origin="top" />}
+      {!isPerfect && didWin && <Confetti count={45} durationMs={1800} origin="top" />}
+
       <div className="session-score">
         <div className="score-big">
           {animatedTotal}

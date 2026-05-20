@@ -40,6 +40,136 @@
   animation: pop-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) 0.18s both;
 }
 
+/* ------- Confetti -------
+   Particles burst from the origin point, rotating and falling under
+   pseudo-gravity. CSS custom properties carry the random per-particle
+   trajectory so the keyframe itself stays simple. */
+.confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 20;
+}
+
+.confetti.origin-center {
+  /* nothing extra — particles already absolute-positioned at 50% */
+}
+
+.confetti.origin-top {
+  /* shift origin upward so the burst sits near the top of the host */
+}
+
+.confetti-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 1.5px;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+  animation: confetti-burst var(--dur) cubic-bezier(0.18, 0.7, 0.4, 1) var(--delay) forwards;
+  will-change: transform, opacity;
+}
+
+.confetti.origin-top .confetti-particle {
+  top: 18%;
+}
+
+@keyframes confetti-burst {
+  0% {
+    transform: translate(-50%, -50%) rotate(0);
+    opacity: 1;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+        calc(-50% + var(--x)),
+        calc(-50% + var(--y))
+      )
+      rotate(var(--r));
+    opacity: 0;
+  }
+}
+
+/* ------- Score counter pulse -------
+   When session.score increases we toggle this class for ~600ms to draw
+   the eye to the new value. */
+.score-value.pulse {
+  animation: score-pulse 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+@keyframes score-pulse {
+  0% {
+    transform: scale(1);
+    color: var(--accent);
+  }
+  35% {
+    transform: scale(1.35);
+    color: var(--accent);
+    text-shadow: 0 0 18px rgba(216, 57, 44, 0.55);
+  }
+  100% {
+    transform: scale(1);
+    color: var(--accent);
+  }
+}
+
+/* ------- Wrong-guess shake + red flash ------- */
+.play-screen.shake {
+  animation: wrong-shake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes wrong-shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+
+.dropdown-input.wrong-flash {
+  animation: wrong-flash 0.55s ease-out;
+}
+
+@keyframes wrong-flash {
+  0% { border-color: var(--accent); background: rgba(216, 57, 44, 0.12); }
+  100% { border-color: var(--ink); background: #fff; }
+}
+
+/* ------- Tier-up flash -------
+   When advancing to the next tier (after a wrong guess), briefly glow
+   the new current tier pill so the user notices the change. */
+.tier-pill.just-activated {
+  animation: tier-flash 0.7s ease-out;
+}
+
+@keyframes tier-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(216, 57, 44, 0.7);
+    transform: scale(1);
+  }
+  35% {
+    box-shadow: 0 0 0 8px rgba(216, 57, 44, 0);
+    transform: scale(1.08);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(216, 57, 44, 0);
+    transform: scale(1);
+  }
+}
+
+/* ------- Play button icon morph -------
+   Smooth crossfade/scale between ▶ and ■ instead of a hard swap. */
+.play-icon {
+  display: inline-block;
+  transition: transform 0.18s cubic-bezier(0.3, 0.7, 0.4, 1.2);
+}
+
+.play-btn:not(:disabled):active .play-icon {
+  transform: scale(0.85);
+}
+
 /* Crisp focus rings for keyboard nav — branded, not the default browser blue */
 *:focus-visible {
   outline: 2px solid var(--accent);
