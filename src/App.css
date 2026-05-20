@@ -209,9 +209,9 @@
 
 .logo {
   display: block;
-  height: 26px;
+  height: 20px;
   width: auto;
-  max-width: 160px;
+  max-width: 130px;
 }
 
 .score-display {
@@ -313,8 +313,8 @@
      .disk-gloss       fixed light highlight overlay (does NOT rotate) */
 .disk-wrap {
   position: relative;
-  width: 168px;
-  height: 168px;
+  width: 188px;
+  height: 188px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -324,16 +324,19 @@
 
 .disk {
   position: relative;
-  width: 134px;
-  height: 134px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   z-index: 3;
-  /* Rotation animation always defined, paused by default. Switching to .playing
-     just toggles animation-play-state, so pause/resume freezes mid-rotation
-     and resumes from the same angle — like a real platter. */
-  animation: spin 1.8s linear infinite;
-  animation-play-state: paused;
+  /* Two animations stacked: spin (rotate property) always defined and paused
+     by default; disk-pulse (scale property) also always defined and paused.
+     `rotate` and `scale` are individual transform properties so they compose
+     without conflicting. Toggling .playing flips both play-states together. */
+  animation: spin 1.8s linear infinite, disk-pulse 0.9s ease-in-out infinite;
+  animation-play-state: paused, paused;
   transform-origin: center;
+  rotate: 0deg;
+  scale: 1;
   background:
     /* 1. Light highlight on upper-left for dimensional feel */
     radial-gradient(
@@ -384,7 +387,7 @@
 }
 
 .disk.playing {
-  animation-play-state: running;
+  animation-play-state: running, running;
 }
 
 /* Album-art label — circular image in the centre of the disc. Rotates with
@@ -394,9 +397,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 64px;
-  height: 64px;
-  margin: -32px 0 0 -32px;
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
   border-radius: 50%;
   background:
     url('/label.jpg') center / cover no-repeat,
@@ -457,8 +460,8 @@
    fixed gloss. Always-on for ambient life. */
 .disk-sweep {
   position: absolute;
-  width: 134px;
-  height: 134px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background: linear-gradient(
     115deg,
@@ -481,8 +484,8 @@
    spins underneath, the highlight stays put, selling the 3D feel. */
 .disk-gloss {
   position: absolute;
-  width: 134px;
-  height: 134px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background:
     linear-gradient(
@@ -502,9 +505,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 150px;
-  height: 150px;
-  margin: -75px 0 0 -75px;
+  width: 168px;
+  height: 168px;
+  margin: -84px 0 0 -84px;
   border-radius: 50%;
   border: 2px solid var(--accent);
   opacity: 0;
@@ -526,7 +529,16 @@
 
 @keyframes spin {
   to {
-    transform: rotate(360deg);
+    rotate: 360deg;
+  }
+}
+
+@keyframes disk-pulse {
+  0%, 100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.045;
   }
 }
 
