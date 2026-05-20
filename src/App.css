@@ -476,6 +476,19 @@
   font-size: 16px;
   color: var(--ink);
   transition: border-color 0.15s;
+  /* type="search" is used to suppress iOS contact AutoFill; reset the
+     default WebKit search styling so the input still matches the design. */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.dropdown-input::-webkit-search-decoration,
+.dropdown-input::-webkit-search-cancel-button,
+.dropdown-input::-webkit-search-results-button,
+.dropdown-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 .dropdown-input:focus {

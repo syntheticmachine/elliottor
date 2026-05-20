@@ -74,7 +74,7 @@ export function SongDropdown({ disabled, onSelect }: Props) {
       <div className="dropdown-row">
         <input
           className="dropdown-input"
-          type="text"
+          type="search"
           placeholder="Name That Tune"
           value={query}
           disabled={disabled}
@@ -82,6 +82,7 @@ export function SongDropdown({ disabled, onSelect }: Props) {
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}
+          enterKeyHint="search"
           name="elliottor-guess"
           onChange={(e) => {
             setQuery(e.target.value);
