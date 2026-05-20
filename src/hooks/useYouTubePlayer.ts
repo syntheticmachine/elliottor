@@ -131,15 +131,19 @@ export function useYouTubePlayer(hostRef: RefObject<HTMLElement | null>) {
       pendingStartSecondsRef.current = startSeconds;
 
       if (loadedIdRef.current !== videoId) {
-        // First play of this video — full load (auto-plays).
+        // First play of this video — full load.
         player.loadVideoById({ videoId, startSeconds });
         loadedIdRef.current = videoId;
       } else {
-        // Subsequent play — seek and play. Avoids a full reload that can
-        // trigger transient HTML5 errors during a long session.
+        // Subsequent play — seek to start.
         player.seekTo(startSeconds, true);
-        player.playVideo();
       }
+      // Always call playVideo() synchronously within the user-gesture
+      // handler. loadVideoById's implicit autoplay is async and iOS Safari
+      // doesn't always honour it as a user gesture, leaving the player
+      // stuck on the first click. Calling playVideo() here is either
+      // redundant (no-op) or the action that actually unblocks audio.
+      player.playVideo();
     },
     [],
   );

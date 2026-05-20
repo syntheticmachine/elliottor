@@ -1312,12 +1312,19 @@ button.disk-wrap.as-button:disabled {
   gap: 12px;
 }
 
-/* ------- Hidden YT iframe host ------- */
+/* ------- Hidden YT iframe host -------
+   iOS Safari refuses audio playback on iframes that are 0×0 or moved
+   off-screen via large negative offsets. Keep the iframe in the
+   document flow at 1×1, just visually invisible (opacity 0) and
+   non-interactive. Audio plays reliably; nothing is visible. */
 .yt-host {
-  position: absolute;
-  left: -9999px;
-  top: -9999px;
-  width: 0;
-  height: 0;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
   overflow: hidden;
+  z-index: -1;
 }
