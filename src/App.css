@@ -1252,7 +1252,26 @@ button.disk-wrap.as-button:disabled {
   letter-spacing: 0.08em;
   color: var(--ink-mute);
   font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.intro-plays {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   margin-bottom: 18px;
+  animation: fade-in 0.4s ease-out 0.15s both;
+}
+
+.intro-plays-num {
+  font-family: var(--display);
+  color: var(--accent);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Tiny help (?) button in the header */

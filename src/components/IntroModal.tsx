@@ -2,9 +2,11 @@ import { useEffect, useRef } from 'react';
 
 type Props = {
   onClose: () => void;
+  /** Global play count across all users; null while loading or unavailable. */
+  playCount?: number | null;
 };
 
-export function IntroModal({ onClose }: Props) {
+export function IntroModal({ onClose, playCount }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Close on Escape; autofocus the Start button for keyboard flow.
@@ -46,6 +48,13 @@ export function IntroModal({ onClose }: Props) {
         </ol>
 
         <div className="intro-foot">5 songs per session · 15 points max</div>
+
+        {playCount != null && playCount > 0 && (
+          <div className="intro-plays">
+            <span className="intro-plays-num">{playCount.toLocaleString()}</span>{' '}
+            {playCount === 1 ? 'game played' : 'games played'}
+          </div>
+        )}
 
         <button ref={buttonRef} className="primary-btn" onClick={onClose}>
           Start →

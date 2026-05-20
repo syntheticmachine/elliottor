@@ -17,6 +17,7 @@ import {
   recordSession,
   type Stats,
 } from './lib/storage';
+import { getPlayCount, incrementPlayCount } from './lib/counter';
 import {
   MAX_POINTS_PER_SESSION,
   SONGS_PER_SESSION,
@@ -43,6 +44,8 @@ function Game() {
   // Show the how-to-play modal on first visit; also when the user clicks
   // the (?) icon in the header.
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro());
+  // Global play counter (best-effort, gracefully degrades to null on failure).
+  const [playCount, setPlayCount] = useState<number | null>(null);
 
   // Brief celebration animations on key state changes.
   // shakeKey is non-null only while the wrong-guess shake is actively
@@ -160,7 +163,18 @@ function Game() {
         session.results.map((r) => r.songId),
       ),
     );
+    // Bump the global play counter; refresh the displayed total.
+    incrementPlayCount().then((n) => {
+      if (n != null) setPlayCount(n);
+    });
   }, [session.status, session.results, session.score]);
+
+  // Fetch the current play count on mount (no increment).
+  useEffect(() => {
+    getPlayCount().then((n) => {
+      if (n != null) setPlayCount(n);
+    });
+  }, []);
 
   function handlePlay() {
     if (!session.currentSong) return;
@@ -295,6 +309,7 @@ function Game() {
 
       {showIntro && (
         <IntroModal
+          playCount={playCount}
           onClose={() => {
             markIntroSeen();
             setShowIntro(false);
