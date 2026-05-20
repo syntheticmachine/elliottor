@@ -62,6 +62,38 @@ function Game() {
     }
   }, [session.status]);
 
+  // Keyboard shortcuts (desktop): SPACE = play, M = extend tier, G = give up.
+  // Skipped while typing in any input so the search field still works.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)
+      ) {
+        return;
+      }
+      if (session.status !== 'playing' || !session.currentSong) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        player.playClip(
+          session.currentSong.youtubeId,
+          session.currentSong.startSeconds,
+          session.clipMs,
+        );
+      } else if (e.key.toLowerCase() === 'm' && session.canExtend) {
+        e.preventDefault();
+        session.extendTier();
+      } else if (e.key.toLowerCase() === 'g') {
+        e.preventDefault();
+        session.giveUp();
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [session, player]);
+
   // Pulse the score counter whenever the score increases.
   useEffect(() => {
     if (session.score > prevScore.current) {
@@ -98,7 +130,12 @@ function Game() {
     const key = session.results.map((r) => r.songId).join('|');
     if (recordedKey.current === key) return;
     recordedKey.current = key;
-    setStats(recordSession(session.score));
+    setStats(
+      recordSession(
+        session.score,
+        session.results.map((r) => r.songId),
+      ),
+    );
   }, [session.status, session.results, session.score]);
 
   function handlePlay() {
@@ -143,7 +180,13 @@ function Game() {
       <main className="main">
         {session.status === 'playing' && session.currentSong && (
           <div key={`shake-${shakeNonce}`} className={`play-screen${shakeNonce ? ' shake' : ''}`}>
-            <div className={`disk-wrap ${player.isPlaying ? 'playing' : ''}`}>
+            <button
+              type="button"
+              className={`disk-wrap as-button ${player.isPlaying ? 'playing' : ''}`}
+              onClick={handlePlay}
+              disabled={player.status !== 'ready'}
+              aria-label={player.isPlaying ? 'Stop clip' : 'Play clip'}
+            >
               <span className="disk-pulse" />
               <span className="disk-pulse" />
               <span className="disk-pulse" />
@@ -154,7 +197,7 @@ function Game() {
               </div>
               <div className="disk-sweep" />
               <div className="disk-gloss" />
-            </div>
+            </button>
 
             <button
               className="play-btn"
@@ -185,6 +228,14 @@ function Game() {
             <button className="giveup-btn" onClick={session.giveUp}>
               give up
             </button>
+
+            <div className="kbd-hint" aria-hidden="true">
+              <span><kbd>SPACE</kbd> play</span>
+              <span>·</span>
+              <span><kbd>M</kbd> more</span>
+              <span>·</span>
+              <span><kbd>G</kbd> give up</span>
+            </div>
           </div>
         )}
 

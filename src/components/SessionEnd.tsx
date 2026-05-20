@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MAX_POINTS_PER_SESSION, TIERS, type SongResult } from '../types';
 import { buildSessionShare, copyToClipboard } from '../lib/share';
-import { findSongById } from '../data/songs';
+import { findSongById, SONGS } from '../data/songs';
 import { averageScore, type Stats } from '../lib/storage';
 import { Confetti } from './Confetti';
 
@@ -97,6 +97,23 @@ export function SessionEnd({ results, stats, onRestart }: Props) {
       </ul>
 
       <pre className="share-grid">{share}</pre>
+
+      <div className="collection">
+        <div className="collection-row">
+          <span className="collection-label">your collection</span>
+          <span className="collection-count">
+            {stats.songsHeard.length} / {SONGS.length}
+          </span>
+        </div>
+        <div className="collection-bar">
+          <div
+            className="collection-bar-fill"
+            style={{
+              width: `${(stats.songsHeard.length / SONGS.length) * 100}%`,
+            }}
+          />
+        </div>
+      </div>
 
       <div className="end-actions">
         <button className="primary-btn" onClick={handleShare}>

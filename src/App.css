@@ -322,6 +322,29 @@
   filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.22));
 }
 
+/* When the disc IS the play button — strip default button chrome and add
+   tactile feedback. The disc itself becomes the primary target. */
+button.disk-wrap.as-button {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s;
+}
+
+button.disk-wrap.as-button:not(:disabled):hover {
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.3));
+}
+
+button.disk-wrap.as-button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+button.disk-wrap.as-button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
 .disk {
   position: relative;
   width: 150px;
@@ -684,6 +707,84 @@
 
 .giveup-btn:hover {
   color: var(--accent-hover);
+}
+
+/* Keyboard shortcut hint — desktop only, hover-capable devices */
+.kbd-hint {
+  display: none;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  text-transform: uppercase;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.kbd-hint kbd {
+  font-family: var(--mono);
+  background: rgba(10, 10, 10, 0.05);
+  border: 1px solid rgba(10, 10, 10, 0.15);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  margin-right: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kbd-hint {
+    display: flex;
+  }
+}
+
+/* Collection / discography progress in SessionEnd */
+.collection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.collection-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.collection-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+  font-weight: 700;
+}
+
+.collection-count {
+  font-family: var(--display);
+  font-size: 18px;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.collection-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-deep);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.collection-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent) 0%, #e8b340 100%);
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
 /* ------- Dropdown ------- */

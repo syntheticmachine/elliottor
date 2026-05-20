@@ -6,12 +6,15 @@ export type Stats = {
   sessionsPlayed: number;
   totalPoints: number;
   bestScore: number;
+  /** Unique song IDs the user has encountered across all sessions. */
+  songsHeard: string[];
 };
 
 const empty = (): Stats => ({
   sessionsPlayed: 0,
   totalPoints: 0,
   bestScore: 0,
+  songsHeard: [],
 });
 
 export function loadStats(): Stats {
@@ -24,11 +27,17 @@ export function loadStats(): Stats {
   }
 }
 
-export function recordSession(scoreInSession: number): Stats {
+export function recordSession(
+  scoreInSession: number,
+  songIdsHeard: string[] = [],
+): Stats {
   const stats = loadStats();
   stats.sessionsPlayed += 1;
   stats.totalPoints += scoreInSession;
   stats.bestScore = Math.max(stats.bestScore, scoreInSession);
+  // Union of previously-heard songs with this session's songs
+  const heard = new Set([...stats.songsHeard, ...songIdsHeard]);
+  stats.songsHeard = [...heard];
   localStorage.setItem(KEY, JSON.stringify(stats));
   return stats;
 }
