@@ -482,12 +482,13 @@
 .dropdown-input {
   flex: 1;
   min-width: 0;
-  padding: 12px 16px;
+  padding: 11px 14px;
   background: #ffffff;
   border: 1.5px solid var(--ink);
   border-radius: 4px;
   font-weight: 500;
-  font-size: 13px;
+  /* 16px minimum — anything smaller triggers Safari iOS zoom on focus */
+  font-size: 16px;
   color: var(--ink);
   transition: border-color 0.15s;
 }

@@ -78,6 +78,11 @@ export function SongDropdown({ disabled, onSelect }: Props) {
           placeholder="Name That Tune"
           value={query}
           disabled={disabled}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          name="elliottor-guess"
           onChange={(e) => {
             setQuery(e.target.value);
             setSelected(null);
