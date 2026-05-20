@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import logoUrl from '/logo-dark.svg';
-import bgUrl from '/bg.jpg';
 import { useSession } from './hooks/useSession';
 import { useYouTubePlayer } from './hooks/useYouTubePlayer';
 import { SongDropdown } from './components/SongDropdown';
@@ -60,9 +59,7 @@ function App() {
   const nextTier = TIERS[Math.min(session.currentTier + 1, TIERS.length - 1)];
 
   return (
-    <>
-      <img src={bgUrl} alt="" aria-hidden="true" className="page-bg" />
-      <div className="app">
+    <div className="app">
       <header className="header">
         <img src={logoUrl} alt="Elliottor" className="logo" />
         <div className="score-display">
@@ -148,8 +145,7 @@ function App() {
       </main>
 
       <div ref={ytHostRef} className="yt-host" />
-      </div>
-    </>
+    </div>
   );
 }
 

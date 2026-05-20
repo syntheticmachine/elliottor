@@ -10,21 +10,6 @@
   z-index: 1;
 }
 
-/* Real <img> for the paper texture — covers the viewport behind all content.
-   Rendered as a sibling of .app (not a child) and given z-index 0 with .app
-   at z-index 1, so the stacking is explicit and reliable. */
-.page-bg {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: 0;
-  opacity: 0.85;
-  pointer-events: none;
-  user-select: none;
-}
-
 /* ------- Header ------- */
 .header {
   display: flex;

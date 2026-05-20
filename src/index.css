@@ -40,7 +40,13 @@
 body {
   margin: 0;
   min-height: 100svh;
-  background: var(--bg);
+  /* Layered background — texture on body (not a fixed <img>) so it propagates
+     into the iOS safe-area insets (notch / home-indicator area). Top layer is
+     a translucent cream wash that controls how much texture comes through. */
+  background:
+    linear-gradient(rgba(241, 231, 211, 0.45), rgba(241, 231, 211, 0.45)),
+    url('/bg.jpg') center / cover no-repeat fixed,
+    var(--bg);
   position: relative;
 }
 
