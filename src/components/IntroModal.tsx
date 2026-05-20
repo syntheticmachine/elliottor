@@ -1,12 +1,16 @@
 import { useEffect, useRef } from 'react';
+import { ModePicker } from './ModePicker';
+import type { GameMode } from '../data/songs';
 
 type Props = {
   onClose: () => void;
   /** Global play count across all users; null while loading or unavailable. */
   playCount?: number | null;
+  mode: GameMode;
+  onModeChange: (mode: GameMode) => void;
 };
 
-export function IntroModal({ onClose, playCount }: Props) {
+export function IntroModal({ onClose, playCount, mode, onModeChange }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Close on Escape; autofocus the Start button for keyboard flow.
@@ -46,6 +50,8 @@ export function IntroModal({ onClose, playCount }: Props) {
             <span>Need more time? Tap <strong>more</strong> for a longer clip — fewer points.</span>
           </li>
         </ol>
+
+        <ModePicker mode={mode} onChange={onModeChange} />
 
         <div className="intro-foot">5 songs per session · 15 points max</div>
 

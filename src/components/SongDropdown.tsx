@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SONGS, type Song } from '../data/songs';
+import { songsForMode, type GameMode, type Song } from '../data/songs';
 
 type Props = {
   disabled?: boolean;
+  mode: GameMode;
   onSelect: (song: Song) => void;
 };
 
@@ -10,7 +11,7 @@ function isMobileViewport(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
 }
 
-export function SongDropdown({ disabled, onSelect }: Props) {
+export function SongDropdown({ disabled, mode, onSelect }: Props) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
@@ -18,15 +19,20 @@ export function SongDropdown({ disabled, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Pool of choosable songs is mode-scoped: hard mode hides the released
+  // catalog (and vice versa) so the search list matches what could actually
+  // be playing.
+  const pool = useMemo(() => songsForMode(mode), [mode]);
+
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return SONGS;
-    return SONGS.filter(
+    if (!q) return pool;
+    return pool.filter(
       (s) =>
         s.title.toLowerCase().includes(q) ||
         s.album.toLowerCase().includes(q),
     );
-  }, [query]);
+  }, [query, pool]);
 
   useEffect(() => {
     setHighlight(0);

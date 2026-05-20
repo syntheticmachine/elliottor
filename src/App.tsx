@@ -12,12 +12,15 @@ import { VinylDemo } from './components/VinylDemo';
 import { IntroModal } from './components/IntroModal';
 import {
   hasSeenIntro,
+  loadMode,
   loadStats,
   markIntroSeen,
   recordSession,
+  saveMode,
   type Stats,
 } from './lib/storage';
 import { getPlayCount, incrementPlayCount } from './lib/counter';
+import type { GameMode } from './data/songs';
 import {
   MAX_POINTS_PER_SESSION,
   SONGS_PER_SESSION,
@@ -36,7 +39,12 @@ function App() {
 }
 
 function Game() {
-  const session = useSession();
+  const [mode, setModeState] = useState<GameMode>(() => loadMode());
+  function setMode(next: GameMode) {
+    setModeState(next);
+    saveMode(next);
+  }
+  const session = useSession(mode);
   const ytHostRef = useRef<HTMLDivElement>(null);
   const player = useYouTubePlayer(ytHostRef);
   const [stats, setStats] = useState<Stats>(() => loadStats());
@@ -159,6 +167,7 @@ function Game() {
     recordedKey.current = key;
     setStats(
       recordSession(
+        mode,
         session.score,
         session.results.map((r) => r.songId),
       ),
@@ -196,6 +205,9 @@ function Game() {
     <div className="app">
       <header className="header">
         <img src={logoUrl} alt="Elliottor" className="logo" />
+        {mode === 'hard' && (
+          <span className="mode-badge" aria-label="Hard mode">HARD</span>
+        )}
         <div className="header-right">
           <button
             type="button"
@@ -270,6 +282,7 @@ function Game() {
 
             <SongDropdown
               disabled={player.status !== 'ready'}
+              mode={mode}
               onSelect={(song) => session.submitGuess(song.id)}
             />
 
@@ -300,6 +313,8 @@ function Game() {
           <SessionEnd
             results={session.results}
             stats={stats}
+            mode={mode}
+            onModeChange={setMode}
             onRestart={handleRestart}
           />
         )}
@@ -314,6 +329,8 @@ function Game() {
       {showIntro && (
         <IntroModal
           playCount={playCount}
+          mode={mode}
+          onModeChange={setMode}
           onClose={() => {
             markIntroSeen();
             setShowIntro(false);

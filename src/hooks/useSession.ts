@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   MAX_TIER_INDEX,
   SONGS_PER_SESSION,
@@ -7,10 +7,10 @@ import {
   type SessionStatus,
   type SongResult,
 } from '../types';
-import { SONGS, type Song } from '../data/songs';
+import { songsForMode, type GameMode, type Song } from '../data/songs';
 
-function pickSessionSongs(): Song[] {
-  const pool = [...SONGS];
+function pickSessionSongs(mode: GameMode): Song[] {
+  const pool = [...songsForMode(mode)];
   const out: Song[] = [];
   const n = Math.min(SONGS_PER_SESSION, pool.length);
   for (let i = 0; i < n; i++) {
@@ -24,13 +24,23 @@ function pointsForTier(tier: number): number {
   return TIERS[tier]?.points ?? 0;
 }
 
-export function useSession() {
-  const [songs, setSongs] = useState<Song[]>(() => pickSessionSongs());
+export function useSession(mode: GameMode) {
+  const [songs, setSongs] = useState<Song[]>(() => pickSessionSongs(mode));
   const [results, setResults] = useState<SongResult[]>([]);
   const [currentTier, setCurrentTier] = useState(0);
   const [currentGuesses, setCurrentGuesses] = useState<Guess[]>([]);
   // Tracks the song that's currently in the "song-complete" intermission view.
   const [finishedResult, setFinishedResult] = useState<SongResult | null>(null);
+
+  // When mode changes (e.g. via the picker on the session-end screen),
+  // re-pick from the new pool and reset all in-flight state.
+  useEffect(() => {
+    setSongs(pickSessionSongs(mode));
+    setResults([]);
+    setCurrentGuesses([]);
+    setCurrentTier(0);
+    setFinishedResult(null);
+  }, [mode]);
 
   const currentIndex = results.length;
   const currentSong: Song | null = songs[currentIndex] ?? null;
@@ -99,12 +109,12 @@ export function useSession() {
   }, [finishedResult]);
 
   const restart = useCallback(() => {
-    setSongs(pickSessionSongs());
+    setSongs(pickSessionSongs(mode));
     setResults([]);
     setCurrentGuesses([]);
     setCurrentTier(0);
     setFinishedResult(null);
-  }, []);
+  }, [mode]);
 
   const score = results.reduce((sum, r) => sum + r.points, 0);
 

@@ -1,5 +1,5 @@
 import { MAX_POINTS_PER_SESSION, TIERS, type SongResult } from '../types';
-import { findSongById } from '../data/songs';
+import { findSongById, type GameMode } from '../data/songs';
 
 // Square per song, color-coded by points earned:
 //   3pt (1.5s win) → 🟩 green
@@ -13,9 +13,13 @@ function squareFor(result: SongResult): string {
   return '🟧';
 }
 
-export function buildSessionShare(results: SongResult[]): string {
+export function buildSessionShare(
+  results: SongResult[],
+  mode: GameMode = 'normal',
+): string {
   const totalPoints = results.reduce((s, r) => s + r.points, 0);
-  const header = `Elliottor ${totalPoints}/${MAX_POINTS_PER_SESSION}`;
+  const modeTag = mode === 'hard' ? ' Hard' : '';
+  const header = `Elliottor${modeTag} ${totalPoints}/${MAX_POINTS_PER_SESSION}`;
   const lines = results.map((r) => {
     const title = findSongById(r.songId)?.title ?? '?';
     return `${squareFor(r)} ${title}`;

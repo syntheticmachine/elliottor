@@ -1321,6 +1321,81 @@ button.disk-wrap.as-button:disabled {
   gap: 12px;
 }
 
+/* ------- Mode badge (header) ------- */
+/* Visible only when the user is in Hard mode, sandwiched between the logo
+   and the score so it's impossible to miss. */
+.mode-badge {
+  font-family: var(--display);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--bg);
+  background: var(--ink);
+  padding: 3px 8px 2px;
+  border-radius: 3px;
+  font-weight: 700;
+  line-height: 1;
+  margin-right: auto;
+}
+
+/* ------- Mode picker (intro modal + session end) ------- */
+.mode-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+
+.mode-picker.compact {
+  margin: 4px 0 4px;
+}
+
+.mode-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1.5px solid var(--ink-mute);
+  border-radius: 4px;
+  color: var(--ink-dim);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.mode-option:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.mode-option.active {
+  border-color: var(--accent);
+  background: rgba(207, 67, 43, 0.08);
+  color: var(--ink);
+}
+
+.mode-option-label {
+  font-family: var(--display);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+
+.mode-option-sub {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--ink-mute);
+}
+
+.mode-option.active .mode-option-sub {
+  color: var(--accent);
+}
+
 /* ------- Build version (very small, for deploy-cache checks) ------- */
 .version {
   margin-top: 20px;

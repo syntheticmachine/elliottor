@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { MAX_POINTS_PER_SESSION, TIERS, type SongResult } from '../types';
 import { buildSessionShare, copyToClipboard } from '../lib/share';
-import { findSongById, SONGS } from '../data/songs';
+import { findSongById, songsForMode, type GameMode } from '../data/songs';
 import { averageScore, type Stats } from '../lib/storage';
 import { Confetti } from './Confetti';
+import { ModePicker } from './ModePicker';
 
 type Props = {
   results: SongResult[];
   stats: Stats;
+  mode: GameMode;
+  /** Mode the user picks for the *next* session. Committed when they hit Play again. */
+  onModeChange: (mode: GameMode) => void;
   onRestart: () => void;
 };
 
@@ -46,13 +50,18 @@ function useCountUp(target: number, durationMs: number) {
   return value;
 }
 
-export function SessionEnd({ results, stats, onRestart }: Props) {
+export function SessionEnd({ results, stats, mode, onModeChange, onRestart }: Props) {
   const [copied, setCopied] = useState(false);
-  const share = buildSessionShare(results);
+  const share = buildSessionShare(results, mode);
   const total = results.reduce((s, r) => s + r.points, 0);
   const animatedTotal = useCountUp(total, 900);
   const canNativeShare =
     typeof navigator !== 'undefined' && 'share' in navigator;
+
+  // Collection counter is per-mode: the released catalog and rarities pool
+  // are independent — heard-count should match the pool you're playing.
+  const bucket = stats[mode];
+  const poolSize = songsForMode(mode).length;
 
   async function handleNativeShare() {
     try {
@@ -117,20 +126,24 @@ export function SessionEnd({ results, stats, onRestart }: Props) {
 
       <div className="collection">
         <div className="collection-row">
-          <span className="collection-label">your collection</span>
+          <span className="collection-label">
+            your collection{mode === 'hard' ? ' (hard)' : ''}
+          </span>
           <span className="collection-count">
-            {stats.songsHeard.length} / {SONGS.length}
+            {bucket.songsHeard.length} / {poolSize}
           </span>
         </div>
         <div className="collection-bar">
           <div
             className="collection-bar-fill"
             style={{
-              width: `${(stats.songsHeard.length / SONGS.length) * 100}%`,
+              width: `${(bucket.songsHeard.length / Math.max(1, poolSize)) * 100}%`,
             }}
           />
         </div>
       </div>
+
+      <ModePicker mode={mode} onChange={onModeChange} compact />
 
       <div className="end-actions-stack">
         <div className="end-actions">
@@ -152,11 +165,11 @@ export function SessionEnd({ results, stats, onRestart }: Props) {
       </div>
 
       <div className="stats-row">
-        <span>{stats.sessionsPlayed} sessions</span>
+        <span>{bucket.sessionsPlayed} sessions</span>
         <span>·</span>
-        <span>Avg {averageScore(stats).toFixed(1)}</span>
+        <span>Avg {averageScore(bucket).toFixed(1)}</span>
         <span>·</span>
-        <span>Best {stats.bestScore}</span>
+        <span>Best {bucket.bestScore}</span>
       </div>
     </div>
   );
