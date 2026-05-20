@@ -1,0 +1,812 @@
+.app {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 18px 18px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Real <img> for the paper texture — covers the viewport behind all content.
+   Rendered as a sibling of .app (not a child) and given z-index 0 with .app
+   at z-index 1, so the stacking is explicit and reliable. */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ------- Header ------- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 2px 0 6px;
+}
+
+.logo {
+  display: block;
+  height: 26px;
+  width: auto;
+  max-width: 160px;
+}
+
+.score-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-dim);
+  font-weight: 700;
+}
+
+.score-value {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--accent);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+}
+
+.score-max {
+  color: var(--ink-mute);
+  font-size: 18px;
+  font-family: var(--display);
+}
+
+/* ------- Progress row ------- */
+.progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 2px;
+  border-top: 2px solid var(--ink);
+}
+
+.song-dots {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.song-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid var(--ink);
+  transition: all 0.2s;
+}
+
+.song-dot.current {
+  background: var(--ink);
+}
+
+.song-dot.done.win {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.song-dot.done.lose {
+  background: var(--bg);
+  border-color: var(--ink-mute);
+  opacity: 0.5;
+}
+
+.progress-text {
+  font-family: var(--display);
+  font-size: 18px;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------- Main / play screen ------- */
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.play-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+/* ------- Spinning vinyl disk -------
+   Structure inside .disk-wrap:
+     .disk-pulse × 3   sonar rings emanating outward when playing
+     .disk             the platter (rotates); contains label marks
+     .disk-gloss       fixed light highlight overlay (does NOT rotate) */
+.disk-wrap {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px 0 4px;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.22));
+}
+
+.disk {
+  position: relative;
+  width: 134px;
+  height: 134px;
+  border-radius: 50%;
+  z-index: 3;
+  /* Rotation animation always defined, paused by default. Switching to .playing
+     just toggles animation-play-state, so pause/resume freezes mid-rotation
+     and resumes from the same angle — like a real platter. */
+  animation: spin 1.8s linear infinite;
+  animation-play-state: paused;
+  transform-origin: center;
+  background:
+    /* 1. Spindle hole — tiny cream dot dead center */
+    radial-gradient(
+      circle at center,
+      var(--bg) 0,
+      var(--bg) 2.5px,
+      transparent 3px
+    ),
+    /* 2. Red center label */
+    radial-gradient(
+      circle at center,
+      var(--accent) 0,
+      var(--accent) 32px,
+      transparent 32.5px
+    ),
+    /* 3. Subtle inner ring on the label (label print detail) */
+    radial-gradient(
+      circle at center,
+      transparent 22px,
+      rgba(0, 0, 0, 0.18) 22.5px,
+      transparent 23.5px
+    ),
+    /* 4. Dark edge where label meets grooves */
+    radial-gradient(
+      circle at center,
+      transparent 31px,
+      rgba(0, 0, 0, 0.6) 32px,
+      transparent 33.5px
+    ),
+    /* 5. Light highlight on upper-left for dimensional feel */
+    radial-gradient(
+      circle at 38% 36%,
+      rgba(255, 255, 255, 0.07) 0,
+      transparent 55%
+    ),
+    /* 6. Track separator rings — warm muted cream lines */
+    radial-gradient(
+      circle at center,
+      transparent 38px,
+      rgba(195, 178, 145, 0.26) 38.5px,
+      transparent 39.5px
+    ),
+    radial-gradient(
+      circle at center,
+      transparent 45px,
+      rgba(195, 178, 145, 0.2) 45.5px,
+      transparent 46.5px
+    ),
+    radial-gradient(
+      circle at center,
+      transparent 52px,
+      rgba(195, 178, 145, 0.24) 52.5px,
+      transparent 53.5px
+    ),
+    radial-gradient(
+      circle at center,
+      transparent 59px,
+      rgba(195, 178, 145, 0.2) 59.5px,
+      transparent 60.5px
+    ),
+    radial-gradient(
+      circle at center,
+      transparent 64px,
+      rgba(195, 178, 145, 0.28) 64.5px,
+      transparent 65.5px
+    ),
+    /* 7. Fine groove texture under everything */
+    repeating-radial-gradient(
+      circle at center,
+      #1a1714 0,
+      #1a1714 1.5px,
+      #0b0908 1.5px,
+      #0b0908 2.4px
+    );
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.disk.playing {
+  animation-play-state: running;
+}
+
+/* Asymmetric marks on the label so rotation is actually visible — without
+   these the grooves are concentric and the spin is invisible. */
+.disk-mark {
+  position: absolute;
+  width: 3px;
+  height: 16px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.35)
+  );
+  border-radius: 1.5px;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+.disk-mark-sm {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  bottom: 30px;
+  right: 36px;
+  z-index: 4;
+}
+
+/* Fixed light gloss — does NOT rotate. Sits above the disk so as the platter
+   spins underneath, the highlight stays put, selling the 3D feel. */
+.disk-gloss {
+  position: absolute;
+  width: 134px;
+  height: 134px;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.04) 22%,
+      transparent 40%,
+      transparent 65%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Sonar rings emanating outward while playing */
+.disk-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.disk-wrap.playing .disk-pulse {
+  animation: emanate 1.8s ease-out infinite;
+}
+
+.disk-wrap.playing .disk-pulse:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.disk-wrap.playing .disk-pulse:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes emanate {
+  0% {
+    transform: scale(0.65);
+    opacity: 0.65;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+/* ------- Play button ------- */
+.play-btn {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    transform 0.1s,
+    background 0.15s;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.play-btn:not(:disabled):hover {
+  transform: scale(1.06);
+  background: var(--accent);
+}
+
+.play-btn:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+.play-icon {
+  font-size: 22px;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+/* ------- Tier pills ------- */
+.tier-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.tier-pill {
+  flex: 0 1 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.tier-pill.current {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.tier-pill.past {
+  opacity: 0.35;
+  text-decoration: line-through;
+  border-color: var(--ink-mute);
+}
+
+.tier-pill.upcoming {
+  opacity: 0.55;
+}
+
+.tier-dot {
+  opacity: 0.5;
+}
+
+.tier-pill.current .tier-points,
+.tier-pill:not(.current) .tier-points {
+  color: var(--accent);
+}
+
+.tier-pill.current .tier-points {
+  color: var(--bg);
+}
+
+.play-meta {
+  color: var(--ink-dim);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: -4px;
+}
+
+/* ------- More / give up ------- */
+.more-btn {
+  padding: 7px 16px;
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.more-btn:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.giveup-btn {
+  padding: 4px 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.giveup-btn:hover {
+  color: var(--accent-hover);
+}
+
+/* ------- Dropdown ------- */
+.dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-row {
+  display: flex;
+  gap: 8px;
+}
+
+.dropdown-input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink);
+  transition: border-color 0.15s;
+}
+
+.dropdown-input:focus {
+  border-color: var(--accent);
+}
+
+.dropdown-input::placeholder {
+  color: var(--ink-mute);
+  font-weight: 500;
+}
+
+.guess-btn {
+  padding: 0 22px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.guess-btn:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+
+.guess-btn:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--surface);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.dropdown-list li {
+  padding: 10px 12px;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.dropdown-list li.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.dropdown-list li.active .song-title,
+.dropdown-list li.active .song-album {
+  color: var(--bg);
+}
+
+.song-title {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.song-album {
+  color: var(--ink-dim);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.dropdown-empty {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  color: var(--ink-dim);
+  font-size: 13px;
+  text-align: center;
+}
+
+.error {
+  color: var(--accent);
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ------- Inter-song result ------- */
+.song-result {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 32px 24px 24px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  text-align: center;
+  align-items: center;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.result-banner {
+  font-family: var(--display);
+  padding: 6px 16px;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.result-banner.win {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.result-banner.lose {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.result-song-title {
+  font-family: var(--display);
+  font-size: 30px;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.result-song-album {
+  color: var(--ink-dim);
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ------- Session end ------- */
+.session-end {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 36px 24px 24px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.session-score {
+  text-align: center;
+}
+
+.score-big {
+  font-family: var(--display);
+  font-size: 88px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  line-height: 0.9;
+}
+
+.score-denom {
+  font-size: 44px;
+  color: var(--ink);
+}
+
+.score-caption {
+  margin-top: 10px;
+  color: var(--ink-dim);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.session-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-deep);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.session-item.lose {
+  color: var(--ink-dim);
+}
+
+.session-item-num {
+  color: var(--ink-mute);
+  font-family: var(--display);
+  font-size: 14px;
+  width: 18px;
+}
+
+.session-item-title {
+  flex: 1;
+  font-weight: 600;
+}
+
+.session-item-tag {
+  font-family: var(--display);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+.session-item.win .session-item-tag {
+  color: var(--accent);
+}
+
+.session-item.lose .session-item-tag {
+  color: var(--ink-mute);
+}
+
+.share-grid {
+  font-family: var(--mono);
+  font-size: 18px;
+  background: var(--bg-deep);
+  padding: 16px 18px;
+  border-radius: 4px;
+  margin: 0;
+  white-space: pre-wrap;
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.end-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.primary-btn {
+  flex: 1;
+  padding: 13px 20px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.primary-btn:hover {
+  background: var(--accent-hover);
+}
+
+.primary-btn:active {
+  transform: scale(0.98);
+}
+
+.secondary-btn {
+  flex: 1;
+  padding: 13px 20px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.secondary-btn:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  color: var(--ink-mute);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ------- Hidden YT iframe host ------- */
+.yt-host {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
