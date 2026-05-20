@@ -20,7 +20,7 @@ export function buildSessionShare(results: SongResult[]): string {
     const title = findSongById(r.songId)?.title ?? '?';
     return `${squareFor(r)} ${title}`;
   });
-  return `${header}\n${lines.join('\n')}\nhttps://elliottor.app`;
+  return `${header}\n${lines.join('\n')}\nhttps://elliottor.com`;
 }
 
 export async function copyToClipboard(text: string): Promise<boolean> {
