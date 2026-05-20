@@ -49,30 +49,23 @@ body {
   position: relative;
 }
 
-/* Mobile: replace the paper image with a more visible cream + red gradient.
-   Pure CSS scales perfectly at any size and looks intentional rather than
-   stretched/cropped like a cover image does on portrait screens. */
+/* Mobile: pure radial gradient from the center that fades into the base
+   cream — no hard edges or visible cutoffs at the top/bottom because
+   every direction blends into the same colour. */
 @media (max-width: 640px) {
   body {
     background:
-      /* Warm red glow upper-right (poster accent) */
+      /* Soft red poster glow, slightly above centre where the vinyl sits */
       radial-gradient(
-        ellipse 85% 55% at 100% 0%,
-        rgba(216, 57, 44, 0.18) 0%,
-        transparent 60%
+        ellipse 90% 65% at 50% 35%,
+        rgba(216, 57, 44, 0.14) 0%,
+        transparent 70%
       ),
-      /* Softer red glow lower-left for balance */
+      /* Warm cream highlight at centre fading seamlessly into --bg */
       radial-gradient(
-        ellipse 65% 45% at 0% 100%,
-        rgba(216, 57, 44, 0.1) 0%,
-        transparent 55%
-      ),
-      /* Diagonal cream gradient — clearly visible, light to a touch deeper */
-      linear-gradient(
-        135deg,
-        #f4ead5 0%,
-        #ecdec0 60%,
-        #e6d4b3 100%
+        ellipse 130% 100% at center,
+        #f8efdb 0%,
+        var(--bg) 75%
       );
   }
 }
