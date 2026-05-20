@@ -148,6 +148,7 @@ function Game() {
               <span className="disk-pulse" />
               <span className="disk-pulse" />
               <div className={`disk ${player.isPlaying ? 'playing' : ''}`}>
+                <span className="disk-label" />
                 <span className="disk-mark" />
                 <span className="disk-mark-sm" />
               </div>

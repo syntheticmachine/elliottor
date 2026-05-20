@@ -335,41 +335,13 @@
   animation-play-state: paused;
   transform-origin: center;
   background:
-    /* 1. Spindle hole — tiny cream dot dead center */
-    radial-gradient(
-      circle at center,
-      var(--bg) 0,
-      var(--bg) 2.5px,
-      transparent 3px
-    ),
-    /* 2. Red center label */
-    radial-gradient(
-      circle at center,
-      var(--accent) 0,
-      var(--accent) 32px,
-      transparent 32.5px
-    ),
-    /* 3. Subtle inner ring on the label (label print detail) */
-    radial-gradient(
-      circle at center,
-      transparent 22px,
-      rgba(0, 0, 0, 0.18) 22.5px,
-      transparent 23.5px
-    ),
-    /* 4. Dark edge where label meets grooves */
-    radial-gradient(
-      circle at center,
-      transparent 31px,
-      rgba(0, 0, 0, 0.6) 32px,
-      transparent 33.5px
-    ),
-    /* 5. Light highlight on upper-left for dimensional feel */
+    /* 1. Light highlight on upper-left for dimensional feel */
     radial-gradient(
       circle at 38% 36%,
       rgba(255, 255, 255, 0.07) 0,
       transparent 55%
     ),
-    /* 6. Track separator rings — warm muted cream lines */
+    /* 2. Track separator rings — warm muted cream lines */
     radial-gradient(
       circle at center,
       transparent 38px,
@@ -413,6 +385,41 @@
 
 .disk.playing {
   animation-play-state: running;
+}
+
+/* Album-art label — circular image in the centre of the disc. Rotates with
+   the disc because it's a child of .disk. The dark edge ring and the tiny
+   spindle hole (via ::after) draw on top of it. */
+.disk-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-radius: 50%;
+  background:
+    url('/label.jpg') center / cover no-repeat,
+    var(--accent);
+  /* Dark edge ring where the label meets the grooves */
+  box-shadow:
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.35),
+    0 0 0 1.5px rgba(0, 0, 0, 0.55);
+  z-index: 1;
+}
+
+.disk-label::after {
+  /* Tiny cream spindle hole on top of the image */
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.5);
 }
 
 /* Asymmetric marks on the label so rotation is actually visible — without
