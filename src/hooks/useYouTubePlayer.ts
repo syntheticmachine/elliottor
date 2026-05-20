@@ -105,8 +105,15 @@ export function useYouTubePlayer(hostRef: RefObject<HTMLElement | null>) {
   const loadAndPause = useCallback((videoId: string, startSeconds: number) => {
     const player = playerRef.current;
     if (!player) return;
-    if (loadedIdRef.current === videoId) return;
-    loadedIdRef.current = videoId;
+    // Cue the video so the player has the right thumbnail / metadata ready,
+    // but DON'T mark it as `loaded` in our ref. cueVideoById only preloads
+    // the thumbnail — it doesn't fetch the actual video data. If we treated
+    // it as loaded, the next playClip would take the seek+play branch on a
+    // not-yet-fetched video, which on mobile (iOS especially) results in
+    // the first click producing no audio. Leaving loadedIdRef null means
+    // the first play always goes through loadVideoById, which is the call
+    // that actually fetches and starts the video while preserving the
+    // user-gesture context.
     player.cueVideoById({ videoId, startSeconds });
   }, []);
 
