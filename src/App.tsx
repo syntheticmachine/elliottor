@@ -9,7 +9,14 @@ import { SongDots } from './components/SongDots';
 import { SongResultCard } from './components/SongResultCard';
 import { SessionEnd } from './components/SessionEnd';
 import { VinylDemo } from './components/VinylDemo';
-import { loadStats, recordSession, type Stats } from './lib/storage';
+import { IntroModal } from './components/IntroModal';
+import {
+  hasSeenIntro,
+  loadStats,
+  markIntroSeen,
+  recordSession,
+  type Stats,
+} from './lib/storage';
 import {
   MAX_POINTS_PER_SESSION,
   SONGS_PER_SESSION,
@@ -33,6 +40,9 @@ function Game() {
   const player = useYouTubePlayer(ytHostRef);
   const [stats, setStats] = useState<Stats>(() => loadStats());
   const recordedKey = useRef<string | null>(null);
+  // Show the how-to-play modal on first visit; also when the user clicks
+  // the (?) icon in the header.
+  const [showIntro, setShowIntro] = useState(() => !hasSeenIntro());
 
   // Brief celebration animations on key state changes.
   // shakeKey is non-null only while the wrong-guess shake is actively
@@ -172,13 +182,23 @@ function Game() {
     <div className="app">
       <header className="header">
         <img src={logoUrl} alt="Elliottor" className="logo" />
-        <div className="score-display">
-          <span className="score-label">score</span>
-          {/* key={scoreBump} restarts the pulse animation on each score change */}
-          <span key={scoreBump} className="score-value pulse">
-            {session.score}
-            <span className="score-max">/{MAX_POINTS_PER_SESSION}</span>
-          </span>
+        <div className="header-right">
+          <button
+            type="button"
+            className="help-btn"
+            onClick={() => setShowIntro(true)}
+            aria-label="How to play"
+          >
+            ?
+          </button>
+          <div className="score-display">
+            <span className="score-label">score</span>
+            {/* key={scoreBump} restarts the pulse animation on each score change */}
+            <span key={scoreBump} className="score-value pulse">
+              {session.score}
+              <span className="score-max">/{MAX_POINTS_PER_SESSION}</span>
+            </span>
+          </div>
         </div>
       </header>
 
@@ -272,6 +292,15 @@ function Game() {
       </main>
 
       <div ref={ytHostRef} className="yt-host" />
+
+      {showIntro && (
+        <IntroModal
+          onClose={() => {
+            markIntroSeen();
+            setShowIntro(false);
+          }}
+        />
+      )}
     </div>
   );
 }

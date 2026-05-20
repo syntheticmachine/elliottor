@@ -1161,6 +1161,138 @@ button.disk-wrap.as-button:disabled {
   text-transform: uppercase;
 }
 
+/* ------- Intro / how-to modal ------- */
+
+.intro-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  animation: fade-in 0.22s ease-out;
+}
+
+.intro-modal {
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 28px 24px 22px;
+  max-width: 380px;
+  width: 100%;
+  animation: intro-rise 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.intro-title {
+  font-family: var(--display);
+  font-size: 28px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+
+.intro-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.intro-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.intro-list strong {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.intro-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 14px;
+  margin-top: 1px;
+}
+
+.intro-foot {
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+/* Tiny help (?) button in the header */
+.help-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--sans);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    transform 0.1s;
+  padding: 0;
+  line-height: 1;
+}
+
+.help-btn:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.help-btn:active {
+  transform: scale(0.92);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 /* ------- Hidden YT iframe host ------- */
 .yt-host {
   position: absolute;

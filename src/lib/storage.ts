@@ -47,4 +47,24 @@ export function averageScore(stats: Stats): number {
   return stats.totalPoints / stats.sessionsPlayed;
 }
 
+/* --- First-visit intro flag --- */
+
+const INTRO_KEY = 'elliotor:intro-seen:v1';
+
+export function hasSeenIntro(): boolean {
+  try {
+    return localStorage.getItem(INTRO_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function markIntroSeen(): void {
+  try {
+    localStorage.setItem(INTRO_KEY, '1');
+  } catch {
+    // ignore — private mode or quota exceeded
+  }
+}
+
 export { MAX_POINTS_PER_SESSION };
