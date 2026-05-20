@@ -151,6 +151,7 @@ function Game() {
                 <span className="disk-mark" />
                 <span className="disk-mark-sm" />
               </div>
+              <div className="disk-sweep" />
               <div className="disk-gloss" />
             </div>
 

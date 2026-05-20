@@ -444,6 +444,32 @@
   z-index: 4;
 }
 
+/* Rotating light sweep — a diagonal highlight that rotates independently
+   of the disc (at a different speed) so it reads as light catching the
+   lacquer surface as the platter spins. Sits above the disc, below the
+   fixed gloss. Always-on for ambient life. */
+.disk-sweep {
+  position: absolute;
+  width: 134px;
+  height: 134px;
+  border-radius: 50%;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 62%
+  );
+  pointer-events: none;
+  z-index: 4;
+  animation: disk-sweep-rotate 4.2s linear infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes disk-sweep-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* Fixed light gloss — does NOT rotate. Sits above the disk so as the platter
    spins underneath, the highlight stays put, selling the 3D feel. */
 .disk-gloss {
