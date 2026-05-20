@@ -42,6 +42,14 @@ function App() {
     if (session.status !== 'playing') player.stop();
   }, [session.status, player]);
 
+  // Scroll to top whenever the screen changes (song-complete or session-end),
+  // so the user doesn't have to manually scroll back up after submitting.
+  useEffect(() => {
+    if (session.status === 'song-complete' || session.status === 'session-complete') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [session.status]);
+
   // Pulse the score counter whenever the score increases.
   useEffect(() => {
     if (session.score > prevScore.current) {

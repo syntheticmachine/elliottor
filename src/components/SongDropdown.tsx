@@ -6,12 +6,17 @@ type Props = {
   onSelect: (song: Song) => void;
 };
 
+function isMobileViewport(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
+}
+
 export function SongDropdown({ disabled, onSelect }: Props) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const [selected, setSelected] = useState<Song | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -73,6 +78,7 @@ export function SongDropdown({ disabled, onSelect }: Props) {
     <div className="dropdown" ref={containerRef}>
       <div className="dropdown-row">
         <input
+          ref={inputRef}
           className="dropdown-input"
           type="search"
           placeholder="What song is this?"
@@ -93,7 +99,30 @@ export function SongDropdown({ disabled, onSelect }: Props) {
             setSelected(null);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setOpen(true);
+            // On mobile, scroll the input up to the top of the viewport so
+            // the keyboard + dropdown have full vertical room below it.
+            if (isMobileViewport() && inputRef.current) {
+              const el = inputRef.current;
+              window.setTimeout(() => {
+                const rect = el.getBoundingClientRect();
+                const targetTop = window.scrollY + rect.top - 16;
+                window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+              }, 200);
+            }
+          }}
+          onBlur={(e) => {
+            // Don't scroll back if focus moved to the Guess button (sibling
+            // inside the dropdown container) — let the click finish first.
+            const next = e.relatedTarget as Node | null;
+            if (next && containerRef.current?.contains(next)) return;
+            if (isMobileViewport()) {
+              window.setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 150);
+            }
+          }}
           onKeyDown={onKeyDown}
         />
         <button
