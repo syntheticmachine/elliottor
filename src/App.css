@@ -1091,21 +1091,30 @@ button.disk-wrap.as-button:disabled {
 
 .share-grid {
   font-family: var(--mono);
-  font-size: 18px;
+  font-size: 14px;
   background: var(--bg-deep);
   padding: 16px 18px;
   border-radius: 4px;
   margin: 0;
   white-space: pre-wrap;
-  text-align: center;
-  line-height: 1.5;
-  letter-spacing: 0.1em;
+  text-align: left;
+  line-height: 1.55;
   color: var(--ink);
 }
 
 .end-actions {
   display: flex;
   gap: 12px;
+}
+
+.end-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.end-action-wide {
+  width: 100%;
 }
 
 .primary-btn {

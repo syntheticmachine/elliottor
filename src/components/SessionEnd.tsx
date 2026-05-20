@@ -51,21 +51,25 @@ export function SessionEnd({ results, stats, onRestart }: Props) {
   const share = buildSessionShare(results);
   const total = results.reduce((s, r) => s + r.points, 0);
   const animatedTotal = useCountUp(total, 900);
+  const canNativeShare =
+    typeof navigator !== 'undefined' && 'share' in navigator;
 
-  async function handleShare() {
-    // Prefer the native share sheet (mobile) — same UX as Wordle: opens
-    // Messages, Mail, etc. Falls back to clipboard on desktop where
-    // navigator.share isn't available.
-    if (typeof navigator !== 'undefined' && 'share' in navigator) {
-      try {
-        await navigator.share({ text: share });
-        return;
-      } catch (e) {
-        // User dismissed the share sheet — silently exit; only fall back
-        // to clipboard on a real failure.
-        if ((e as Error).name === 'AbortError') return;
+  async function handleNativeShare() {
+    try {
+      await navigator.share({ text: share });
+    } catch (e) {
+      // User dismissed the share sheet — silently exit.
+      if ((e as Error).name === 'AbortError') return;
+      // Real failure: fall back to clipboard so the user still gets the text.
+      const ok = await copyToClipboard(share);
+      if (ok) {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1500);
       }
     }
+  }
+
+  async function handleCopy() {
     const ok = await copyToClipboard(share);
     if (ok) {
       setCopied(true);
@@ -128,11 +132,21 @@ export function SessionEnd({ results, stats, onRestart }: Props) {
         </div>
       </div>
 
-      <div className="end-actions">
-        <button className="primary-btn" onClick={handleShare}>
-          {copied ? 'Copied!' : 'Share'}
-        </button>
-        <button className="secondary-btn" onClick={onRestart}>
+      <div className="end-actions-stack">
+        <div className="end-actions">
+          {canNativeShare && (
+            <button className="primary-btn" onClick={handleNativeShare}>
+              Share
+            </button>
+          )}
+          <button
+            className={canNativeShare ? 'secondary-btn' : 'primary-btn'}
+            onClick={handleCopy}
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+        <button className="secondary-btn end-action-wide" onClick={onRestart}>
           Play again
         </button>
       </div>
