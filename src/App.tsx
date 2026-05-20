@@ -12,12 +12,10 @@ import { VinylDemo } from './components/VinylDemo';
 import { IntroModal } from './components/IntroModal';
 import { ModeSelectModal } from './components/ModeSelectModal';
 import {
-  hasPickedMode,
   hasSeenIntro,
   loadMode,
   loadStats,
   markIntroSeen,
-  markModePicked,
   recordSession,
   saveMode,
   type Stats,
@@ -55,12 +53,10 @@ function Game() {
   // Show the how-to-play modal on first visit; also when the user clicks
   // the (?) icon in the header.
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro());
-  // Returning users who saw the intro before Hard mode shipped need a
-  // one-time prompt to pick a mode. First-time users get the picker inside
-  // the IntroModal, so we don't show this for them.
-  const [showModeSelect, setShowModeSelect] = useState(
-    () => hasSeenIntro() && !hasPickedMode(),
-  );
+  // Returning users get a mode-select prompt on every page load — picking
+  // Normal vs Hard is the first thing they do each session. First-time
+  // users skip this because the IntroModal already contains the picker.
+  const [showModeSelect, setShowModeSelect] = useState(() => hasSeenIntro());
   // Global play counter (best-effort, gracefully degrades to null on failure).
   const [playCount, setPlayCount] = useState<number | null>(null);
 
@@ -342,10 +338,8 @@ function Game() {
           onModeChange={setMode}
           onClose={() => {
             markIntroSeen();
-            // Dismissing the intro is also an implicit mode choice — even
-            // if the user kept the default — so they don't get the
-            // ModeSelectModal on top of it.
-            markModePicked();
+            // First-time users picked their mode inside the IntroModal —
+            // don't immediately stack the ModeSelectModal on top.
             setShowIntro(false);
             setShowModeSelect(false);
           }}
@@ -356,10 +350,7 @@ function Game() {
         <ModeSelectModal
           mode={mode}
           onModeChange={setMode}
-          onClose={() => {
-            markModePicked();
-            setShowModeSelect(false);
-          }}
+          onClose={() => setShowModeSelect(false)}
         />
       )}
     </div>

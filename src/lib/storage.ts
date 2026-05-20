@@ -130,28 +130,4 @@ export function markIntroSeen(): void {
   }
 }
 
-/* --- One-time mode-selection prompt ---
-   Returning users who finished the intro before Hard mode shipped never saw
-   the mode picker. We surface a small dedicated picker on their next visit
-   so they make an explicit choice. After that, the picker on the intro
-   modal and the session-end screen are sufficient. */
-
-const MODE_PICKED_KEY = 'elliotor:mode-picked:v1';
-
-export function hasPickedMode(): boolean {
-  try {
-    return localStorage.getItem(MODE_PICKED_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
-export function markModePicked(): void {
-  try {
-    localStorage.setItem(MODE_PICKED_KEY, '1');
-  } catch {
-    // ignore — private mode or quota exceeded
-  }
-}
-
 export { MAX_POINTS_PER_SESSION };
